@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday: System Access Granted</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the terminal look and blinking cursor */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+        
+        .font-terminal {
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Blinking cursor animation */
+        @keyframes blink-cursor {
+            0%, 100% { border-color: transparent; }
+            50% { border-color: #34d399; } /* Neon Green */
+        }
+
+        .typing-cursor {
+            border-right: 3px solid #34d399; 
+            animation: blink-cursor 0.7s step-end infinite;
+        }
+
+        /* Subtle neon glow for the main container */
+        .neon-box {
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(52, 211, 153, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-green-400 min-h-screen flex items-center justify-center p-4 font-terminal">
+
+    <div id="main-container" class="w-full max-w-4xl p-6 md:p-10 border border-green-500 rounded-xl neon-box bg-gray-900/90 shadow-2xl transition duration-500 ease-in-out transform hover:scale-[1.01]">
+        
+        <!-- Header Section: System Check -->
+        <div class="mb-6 border-b border-green-700 pb-4">
+            <p class="text-xl md:text-2xl font-bold mb-2">
+                <span class="text-red-500">[ALERT]</span> Initiating Birthday Protocol v2.0...
+            </p>
+            <p class="text-sm">
+                <span class="text-yellow-400">[STATUS]</span> Target User ID: <span class="text-blue-400">CloseFriend_0x{
+                  Math.floor(Math.random() * 10000).toString(16).toUpperCase()
+                }</span>
+            </p>
+            <p class="text-sm">
+                <span class="text-yellow-400">[STATUS]</span> Establishing Secure Connection... <span class="text-green-400">| OK |</span>
+            </p>
+        </div>
+        
+        <!-- Main Terminal Output -->
+        <div id="terminal-output" class="text-lg md:text-xl leading-relaxed whitespace-pre-wrap">
+            <p>&gt; Executing `birthday_message.sh`...</p>
+        </div>
+
+        <!-- Hidden Message Container (revealed after typing) -->
+        <div id="final-message" class="mt-8 pt-4 border-t border-green-700 hidden">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-green-300 mb-4 animate-pulse">
+                EXECUTION COMPLETE!
+            </h2>
+            <div class="text-right mt-4 text-sm text-yellow-500">
+                — Your biggest fan (and co-conspirator)
+            </div>
+            
+            <!-- Fun Button -->
+            <div class="flex justify-center mt-8">
+                <button onclick="console.log('Birthday wish accepted. Log cleared.')" 
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-gray-900 font-bold rounded-full transition duration-300 shadow-lg hover:shadow-green-500/50 transform hover:-translate-y-0.5">
+                    Execute CELEBRATE Command
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const messageContainer = document.getElementById('terminal-output');
+        const finalMessage = document.getElementById('final-message');
+        
+        // Simplified and shortened message sequence
+        const mainMessageText = [
+            "&gt; Executing `birthday_message.sh`...", // Keeping this for the typing start
+            "SUCCESS: Key [0xDEADC0DE] found.",
+            "Bypassing firewalls and IDS...",
+            "// MESSAGE START: WISH DECRYPTED",
+            "&gt; Hope your birthday is full of successful exploits and zero vulnerabilities.",
+            "&gt; Keep coding, keep learning, and know that you're a great friend.",
+            "",
+            "HAPPY BIRTHDAY!"
+        ];
+        
+        let lineIndex = 0;
+        let charIndex = 0;
+        let speed = 15; // Much faster typing (ms per character)
+        let lineDelay = 150; // Much shorter pause between lines (ms)
+
+        /**
+         * Converts plain text to HTML-friendly format and applies colors.
+         * @param {string} text - The line of text to process.
+         * @returns {string} The formatted HTML string.
+         */
+        function formatLine(text) {
+            if (text.startsWith("SUCCESS")) {
+                return `<p class="text-green-400">${text}</p>`;
+            } else if (text.startsWith("Bypassing")) {
+                return `<p class="text-yellow-400">${text}</p>`;
+            } else if (text.startsWith("// MESSAGE START")) {
+                // Highlight the start of the message
+                return `<p class="text-red-400">${text}</p>`;
+            } else if (text.startsWith("&gt;")) {
+                 // Use a bright cyan for the actual heartfelt message to stand out
+                 return `<p class="text-cyan-400 font-medium">${text}</p>`;
+            } else if (text.includes("HAPPY BIRTHDAY!")) {
+                return `<p class="text-3xl font-extrabold text-teal-400 mt-2">${text}</p>`;
+            }
+            return `<p>${text}</p>`;
+        }
+
+        /**
+         * The core typing loop function.
+         */
+        function typeWriter() {
+            if (lineIndex < mainMessageText.length) {
+                const currentLineText = mainMessageText[lineIndex];
+                
+                // Get the last <p> element in the container, or create one if this is a new line
+                let currentPElements = messageContainer.querySelectorAll('p');
+                let currentP = currentPElements[currentPElements.length - 1];
+
+                if (!currentP || currentP.textContent.includes(currentLineText)) {
+                    // Start a new line
+                    const newLineHTML = formatLine(currentLineText);
+                    messageContainer.innerHTML += newLineHTML;
+                    currentPElements = messageContainer.querySelectorAll('p');
+                    currentP = currentPElements[currentPElements.length - 1];
+                    charIndex = 0;
+                    
+                    // Add a cursor temporarily
+                    currentP.classList.add('typing-cursor');
+                    
+                    // If the line is empty (like line 6), skip typing
+                    if (currentLineText.length === 0) {
+                        currentP.innerHTML = '';
+                        currentP.classList.remove('typing-cursor');
+                        lineIndex++;
+                        // Introduce a short delay before the next line
+                        setTimeout(typeWriter, 300);
+                        return;
+                    }
+                }
+
+                if (charIndex < currentLineText.length) {
+                    currentP.innerHTML = currentLineText.substring(0, charIndex + 1);
+                    charIndex++;
+                    setTimeout(typeWriter, speed);
+                } else {
+                    // Line finished
+                    currentP.classList.remove('typing-cursor');
+                    lineIndex++;
+                    
+                    // Introduce a short delay before the next line
+                    setTimeout(typeWriter, lineDelay);
+                }
+            } else {
+                // All lines are finished, show the final static message
+                finalMessage.classList.remove('hidden');
+                
+                // Add a permanent, subtle message below the terminal output
+                messageContainer.innerHTML += '<p class="text-xs text-gray-500 mt-4">&gt; Process complete. Log cleared. Enjoy the celebration.</p>';
+            }
+        }
+
+        // Initialize the typing effect when the window loads
+        window.onload = () => {
+            // Give a short delay before starting the terminal sequence
+            setTimeout(typeWriter, 1000); 
+        };
+    </script>
+</body>
+</html>
